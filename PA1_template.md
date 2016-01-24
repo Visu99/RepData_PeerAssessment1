@@ -97,6 +97,21 @@ I have used md.patter to find the total number of missing values in the dataset 
 
 ```r
 library(mice)
+```
+
+```
+## Warning: package 'mice' was built under R version 3.2.3
+```
+
+```
+## Loading required package: Rcpp
+```
+
+```
+## mice 2.25 2015-11-09
+```
+
+```r
  md.pattern(activitydata)
 ```
 
@@ -181,12 +196,47 @@ install.packages("timeDate" ,repos = "http://cran.us.r-project.org")
 ```
 
 ```
-## Error in install.packages : Updating loaded packages
+## Installing package into 'C:/Users/IBM_ADMIN/Documents/R/win-library/3.2'
+## (as 'lib' is unspecified)
+```
+
+```
+## package 'timeDate' successfully unpacked and MD5 sums checked
+## 
+## The downloaded binary packages are in
+## 	C:\Users\IBM_ADMIN\AppData\Local\Temp\RtmpuUUYWK\downloaded_packages
 ```
 
 ```r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(timeDate)
+```
+
+```
+## Warning: package 'timeDate' was built under R version 3.2.3
+```
+
+```r
 adwday <- mutate(completedData, isweekday= isWeekday(completedData$date, wday=1:5))
 weekdaydata <-adwday[adwday$isweekday == TRUE , 1:3 ]
 weekenddata <-adwday[adwday$isweekday == FALSE , 1:3 ]
@@ -199,13 +249,11 @@ weekenddatabyinterval <- aggregate( weekenddata[,1] , by = list(weekenddata$inte
 
 
 ```r
-plot(weekdaydatabyinterval, type="l" )
+par(mfrow=c(2,1))
+plot(weekdaydatabyinterval, type="l" , main = "Weekday Activity Pattern" , xlab = "5 minute interval" , ylab = "Total Steps")
+plot(weekenddatabyinterval, type="l" , main = "Weekend Activity Pattern"  , xlab = "5 minute interval" , ylab = "Total Steps")
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-11-1.png)
 
-```r
-plot(weekenddatabyinterval, type="l" )
-```
-
-![](PA1_template_files/figure-html/unnamed-chunk-11-2.png)
+    This plot shows that on weekends there is more activity from afternoon through late evening.  

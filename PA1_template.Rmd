@@ -149,6 +149,9 @@ weekenddatabyinterval <- aggregate( weekenddata[,1] , by = list(weekenddata$inte
     We now make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).  
 
 ```{r}    
-plot(weekdaydatabyinterval, type="l" )
-plot(weekenddatabyinterval, type="l" )
+par(mfrow=c(2,1))
+plot(weekdaydatabyinterval, type="l" , main = "Weekday Activity Pattern" , xlab = "5 minute interval" , ylab = "Total Steps")
+plot(weekenddatabyinterval, type="l" , main = "Weekend Activity Pattern"  , xlab = "5 minute interval" , ylab = "Total Steps")
 ```    
+
+    This plot shows that on weekends there is more activity from afternoon through late evening.  
