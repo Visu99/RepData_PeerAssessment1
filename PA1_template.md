@@ -1,16 +1,12 @@
----
-title: "Reproducible Research: Project 1 by Vish Yella"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Project 1 by Vish Yella
 
 
 ## Loading and preprocessing the data
 
 Load the data using read.csv() function.  Create a new dataframe that removes the NA values.
 
-```{r}
+
+```r
 activitydata  <- read.csv("activity.csv")
 activitydata2 <- na.omit(activitydata)
 ```
@@ -22,27 +18,40 @@ For this part of the assignment, we ignore the missing values in the dataset. He
 
     Calculate the total number of steps taken per day by using aggregate function:
     
-```{r}
+
+```r
 activitydatatotalbydate <- aggregate(activitydata2[,1], by = list(activitydata2$date), FUN = sum)
 
 colnames(activitydatatotalbydate) <- c("Date", "TotalSteps")
-
-
-```    
+```
    Make a histogram of the total number of steps taken each day
    
-```{r}   
+
+```r
 hist(activitydatatotalbydate$TotalSteps , breaks = 10, main = "Histogram of Total Steps/day" , xlab = "Count of Steps" , border = "blue", col = "green")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)
    
    
    
    Calculate and report the mean and median of the total number of steps taken per day
-```{r}
-mean(activitydatatotalbydate$TotalSteps) 
 
+```r
+mean(activitydatatotalbydate$TotalSteps) 
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(activitydatatotalbydate$TotalSteps)
-```  
+```
+
+```
+## [1] 10765
+```
 
 
 
@@ -50,23 +59,24 @@ median(activitydatatotalbydate$TotalSteps)
 
         Calculate the total number of steps taken per interval by using aggregate function:
 
-```{r}
-activitydatatotalbyinterval <- aggregate(activitydata2[,1], by = list(activitydata2$interval), FUN = mean)
 
+```r
+activitydatatotalbyinterval <- aggregate(activitydata2[,1], by = list(activitydata2$interval), FUN = mean)
 ```
 
     Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
  
-```{r}   
+
+```r
  plot(activitydatatotalbyinterval, type = "l", axes = FALSE, ann = FALSE)
  axis(2,  las = 1, at = 25*0:max(activitydatatotalbyinterval$Group.1))
  axis(1, at = 5*0:max(activitydatatotalbyinterval$Group.1)) 
  # Label the x and y axes with dark green text
  title(xlab= "Interval", col.lab=rgb(0,0.5,0))
  title(ylab= "Total", col.lab=rgb(0,0.5,0))
- 
- 
-```   
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)
     
     
     The above plot shows that 835 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps.  It has total of just over 200.
@@ -84,10 +94,17 @@ For replaceing the missing values I have used the MICE package's mice() function
 
 I have used md.patter to find the total number of missing values in the dataset (i.e. the total number of rows with NAs)
     
-```{r}
+
+```r
 library(mice)
  md.pattern(activitydata)
+```
 
+```
+##       date interval steps     
+## 15264    1        1     1    0
+##  2304    1        1     0    1
+##          0        0  2304 2304
 ```
     
 This tells us that 2304 values are missing values in STEPS column.  
@@ -98,27 +115,52 @@ This tells us that 1528 values do NOT have any missing values in any 3 columns.
     
     The strategy I have used to fill missing data is using "predictive mean method" (pmm) of mice package. Note that advanced variations can be used to increaes the number of iterations etc.  For the purpose of this initial assignment, I have opted to use just one iteration.  completedData contains the dataframe with missing values replaced with pmm values.
     
-```{r}
+
+```r
 tempdata <- mice(activitydata, m=1 , method ="pmm", maxit = 1, seed = 500 )
+```
+
+```
+## 
+##  iter imp variable
+##   1   1  steps
+```
+
+```r
 completedData <- complete(tempdata, 1)
-```    
+```
     
     
     
     
     After creating the above new dataset that is equal to the original dataset but with the missing data filled in we make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. 
     
-```{r}
+
+```r
 completedDatatotals <- aggregate(completedData[,1], by = list(completedData$date), FUN = sum)
 
 colnames(completedDatatotals) <- c("Date", "TotalSteps")
 
 hist(completedDatatotals$TotalSteps , breaks = 10, main = "Histogram of Total Steps/day (With Imputed Values)" , xlab = "Count of Steps" , border = "blue", col = "green")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)
+
+```r
 mean(completedDatatotals$TotalSteps)
+```
 
+```
+## [1] 11164.41
+```
+
+```r
 median(completedDatatotals$TotalSteps)
-```     
+```
+
+```
+## [1] 11162
+```
     
     
     The impact of imputing missing data on the estimates of the total daily number of steps:
@@ -133,8 +175,16 @@ median(completedDatatotals$TotalSteps)
 
 For this part I have used the timeDate package. I am using the completedData dataset with the filled-in missing values for this part.  I create a new column called isweekday with logical values TRUE/FALSE:
 
-```{r}
+
+```r
 install.packages("timeDate" ,repos = "http://cran.us.r-project.org")
+```
+
+```
+## Error in install.packages : Updating loaded packages
+```
+
+```r
 library(dplyr)
 library(timeDate)
 adwday <- mutate(completedData, isweekday= isWeekday(completedData$date, wday=1:5))
@@ -142,13 +192,20 @@ weekdaydata <-adwday[adwday$isweekday == TRUE , 1:3 ]
 weekenddata <-adwday[adwday$isweekday == FALSE , 1:3 ]
 weekdaydatabyinterval <- aggregate( weekdaydata[,1] , by = list(weekdaydata$interval), FUN = mean) 
 weekenddatabyinterval <- aggregate( weekenddata[,1] , by = list(weekenddata$interval), FUN = mean) 
-
-``` 
+```
 
  
     We now make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).  
 
-```{r}    
+
+```r
 plot(weekdaydatabyinterval, type="l" )
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png)
+
+```r
 plot(weekenddatabyinterval, type="l" )
-```    
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-11-2.png)
